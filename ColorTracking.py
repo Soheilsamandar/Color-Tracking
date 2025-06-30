@@ -32,6 +32,23 @@ def draw_Contours(frame,mask):
             cv.drawContours(frame,[box],0,(255,0,0),2)
 
 
+def Creatmask(hsvFrame,low,up):
+    mask = cv.inRange(hsvFrame,low,up)
+    kernel = np.ones((5,5),np.uint8)
+    Resmask = cv.morphologyEx(mask,cv.MORPH_OPEN,kernel)
+    return Resmask
+
+lowR1 = np.array([0,120,70])
+upR1 = np.array([10,255,255])
+lowR2 = np.array([170,120,70])
+upR2 = np.array([180,255,255])
+
+lowG=np.array([40,50,50])
+upG = np.array([90,255,255])
+
+lowB = np.array([100,150,50])
+upB = np.array([135,255,255])
+
 cap = cv.VideoCapture(0)
 while True:
     ret,frame = cap.read()
@@ -40,19 +57,13 @@ while True:
     default_cx = width//2
     default_cy = height//2
 
-    lowR1 = np.array([0,120,70])
-    upR1 = np.array([10,255,255])
-    lowR2 = np.array([170,120,70])
-    upR2 = np.array([180,255,255])
-    mask_red = cv.inRange(hsv,lowR1,upR1)+cv.inRange(hsv,lowR2,upR2)
 
-    lowG=np.array([40,50,50])
-    upG = np.array([90,255,255])
-    mask_green = cv.inRange(hsv,lowG,upG)
+    mask_red = Creatmask(hsv,lowR1,upR1)+Creatmask(hsv,lowR2,upR2)
+
+
+    mask_green = Creatmask(hsv,lowG,upG)
    
-    lowB = np.array([100,150,50])
-    upB = np.array([135,255,255])
-    mask_B = cv.inRange(hsv,lowB,upB)
+    mask_B = Creatmask(hsv,lowB,upB)
     draw_Contours(frame,mask_B)
 
     #center = find_color_center(mask_green) or find_color_center(mask_B)
