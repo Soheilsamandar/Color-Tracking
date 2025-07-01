@@ -1,7 +1,8 @@
 import cv2 as cv 
 import numpy as np 
 
-def find_color_center(mask):
+
+def FindCenter(mask):
     contours,_ = cv.findContours(mask,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
     center = None
     if contours:
@@ -14,15 +15,18 @@ def find_color_center(mask):
                 center = (cx,cy)
     return center
 
-def draw_line(cx,cy,height,width):
+
+
+def DrawCross(cx,cy,height,width):
     color = (0,0,255)
     cv.line(frame,(cx,0),(cx,height),color,2)
     cv.line(frame,(0,cy),(width,cy),color,2)
-    cv.circle(frame,(cx,cy),5,(0,0,0),-1)
-    cv.circle(frame,(cx,cy),20,(0,255,0),1)
+    cv.circle(frame,(cx,cy),10,(0,0,0),-1)
+    cv.circle(frame,(cx,cy),20,(0,255,0),2)
     cv.putText(frame,f"x:{cx},y:{cy}",(cx+10,cy-10),cv.FONT_HERSHEY_COMPLEX,0.5,(0,255,0),2)
 
-def draw_Contours(frame,mask):
+
+def DrawContours(frame,mask):
     contours,_ = cv.findContours(mask,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         if cv.contourArea(cnt)>300:
@@ -59,18 +63,19 @@ while True:
 
 
     mask_red = Creatmask(hsv,lowR1,upR1)+Creatmask(hsv,lowR2,upR2)
+    
+    mask_green = Creatmask(hsv,lowG,upG)   
+    
 
 
-    mask_green = Creatmask(hsv,lowG,upG)
-   
     mask_B = Creatmask(hsv,lowB,upB)
-    draw_Contours(frame,mask_B)
+    DrawContours(frame,mask_B)
 
     #center = find_color_center(mask_green) or find_color_center(mask_B)
-    center = find_color_center(mask_B)
+    center = FindCenter(mask_B) 
     if center:
         cx,cy = center
-        draw_line(cx,cy,height,width)  
+        DrawCross(cx,cy,height,width)  
     else:
         cx,cy = default_cx,default_cy  
     
@@ -78,4 +83,5 @@ while True:
     if cv.waitKey(1)==27:
         break
 cv.destroyAllWindows()
+
 
